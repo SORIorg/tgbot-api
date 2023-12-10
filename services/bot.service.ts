@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { TMessage, TMetadata, TypeOfListener } from '../types/bot.types';
 import { CommandMapper, MessageMapper } from '../decorators';
+import { TMessage, TMetadata, TypeOfListener } from '../types';
 
 export class BotService extends TelegramBot {
   constructor(token: string, polling: boolean, callback?: () => void) {
