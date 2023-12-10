@@ -1,10 +1,10 @@
 {
-  "name": "sori-tgbot-api",
+  "name": "@sori/tgbot",
   "version": "1.0.0",
   "description": "Library for simplified work with telegram",
-  "main": "index.js",
-  "scripts": {
-    "start": "ts-node services/index.ts"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SORIorg/sori-tgbot-api"
   },
   "author": "Habit",
   "license": "ISC",
