@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { CommandMapper, MessageMapper } from '../decorators';
-import { TMessage, TMetadata, TypeOfListener } from '../types';
+import { TMessage, TMetadata } from '../types';
 
 export class BotService extends TelegramBot {
   constructor(token: string, polling: boolean, callback?: () => void) {
@@ -8,9 +8,14 @@ export class BotService extends TelegramBot {
     if (callback) callback();
   }
 
-  async addController<C>(type: TypeOfListener, _controller: C) {
+  async addController<C>(options: {
+    controllers: [C];
+    message?: boolean;
+    callbackQuery?: boolean;
+  }) {
     await this.setMyCommands([...CommandMapper]);
-    this.on(type, type === 'message' ? this.messageListener : this.queryListener);
+    if (options.message) this.on('message', this.messageListener);
+    if (options.callbackQuery) this.on('callback_query', this.queryListener);
   }
 
   private async messageListener(message: TMessage, metadata: TMetadata) {
@@ -21,5 +26,13 @@ export class BotService extends TelegramBot {
     if (result) await this.sendMessage(message.chat.id, String(result));
   }
 
-  private async queryListener(query: TelegramBot.CallbackQuery) {}
+  private async queryListener(query: TelegramBot.CallbackQuery) {
+    const path: string = query.data ? query.data : '';
+    const chatId: number | undefined = query.message?.chat.id;
+    if (!chatId) throw new Error('Chat ID is not defined');
+    const isFunc = MessageMapper.get(path);
+    if (!isFunc) return;
+    const result = isFunc(query);
+    if (result) await this.sendMessage(chatId, String(result));
+  }
 }
