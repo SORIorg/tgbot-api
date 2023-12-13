@@ -1,33 +1,59 @@
-import { TConstructor } from '../types';
+import { Constructor, IClassData } from '../types';
 
 /**
- * Написать интерфейс
+ * This DI container is needed to set the users-command and method request.
+ * Also for defining dependencies within classes
  */
-class DependencyRegistry {
-  private paths: Map<string, { target: TConstructor; method: string }> = new Map();
-  private dependencies: Map<TConstructor, TConstructor[]> = new Map();
+interface IDependencyRegistry {
+  /**
+   * Set the path like "/start" with method like "start(){}" and class like "controller{}"
+   * @param {string} path like "/start"
+   * @param {IClassData} classData class metadata along the path
+   */
+  setPath(path: string, classData: IClassData): void;
 
-  setPath(path: string, methodData: { target: TConstructor; method: string }) {
+  /**
+   * Set the class and dependencies
+   * @param {Constructor} target class constructor
+   * @param {Constructor} dependencies Constructors array of dependencies
+   */
+  setDependencies(target: Constructor, dependencies: Constructor[]): void;
+
+  /**
+   * Get class metadata by path
+   * @param {string} path like "/start"
+   */
+  getPath(path: string): IClassData | undefined;
+
+  /**
+   * Get class dependencies by class - constructor
+   * @param {Constructor} target class - constructor
+   */
+  getDependencies(target: Constructor): Constructor[] | undefined;
+}
+
+class DependencyRegistry implements IDependencyRegistry {
+  private paths: Map<string, IClassData> = new Map();
+  private dependencies: Map<Constructor, Constructor[]> = new Map();
+
+  setPath(path: string, methodData: IClassData) {
     if (this.paths.has(path)) throw new Error(`This path ${path} already exists`);
     this.paths.set(path, methodData);
   }
 
-  setDependencies(target: TConstructor, dependencies: TConstructor[]) {
+  setDependencies(target: Constructor, dependencies: Constructor[]) {
     if (this.dependencies.has(target))
       throw new Error(`This class ${target.constructor.name} already exists`);
     this.dependencies.set(target, dependencies);
   }
 
-  getPath(path: string): { target: TConstructor; method: string } {
-    const result: { target: TConstructor; method: string } | undefined =
-      this.paths.get(path);
-    if (!result) throw new Error(`nothing is registered along the ${path} path`);
-    return result;
+  getPath(path: string): IClassData | undefined {
+    return this.paths.get(path);
   }
 
-  getDependencies(target: TConstructor): TConstructor[] | undefined {
+  getDependencies(target: Constructor): Constructor[] | undefined {
     return this.dependencies.get(target);
   }
 }
 
-export const Container: DependencyRegistry = new DependencyRegistry();
+export const Container: IDependencyRegistry = new DependencyRegistry();
