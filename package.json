@@ -1,10 +1,10 @@
 {
-  "name": "@sori/tgbot",
+  "name": "@SORIorg/tgbot-api",
   "version": "1.0.0",
   "description": "Library for simplified work with telegram",
-  "repository": {
+    "repository": {
     "type": "git",
-    "url": "https://github.com/SORIorg/sori-tgbot-api"
+    "url": "https://github.com/SORIorg/tgbot-api"
   },
   "author": "Habit",
   "license": "ISC",
@@ -20,6 +20,9 @@
   "dependencies": {
     "node-telegram-bot-api": "^0.64.0",
     "reflect-metadata": "^0.1.14"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/SORIorg"
   },
   "prettier": {
     "singleQuote": true,
