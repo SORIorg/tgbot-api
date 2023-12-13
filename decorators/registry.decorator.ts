@@ -1,6 +1,14 @@
+import { Constructor } from '../types';
+
 /**
- * придумать функционал декоратору Registry
+ * Registry decorator without direct functionality
+ * Need to init register classes
  */
-export function Registry(settings: any) {
-  return function <T extends { new (...args: any[]): object }>(target: T) {};
+interface ISettings {
+  controllers: Constructor[];
+  services: Constructor[];
+}
+
+export function Registry(settings: ISettings) {
+  return function (target: Constructor) {};
 }
