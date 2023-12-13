@@ -26,8 +26,8 @@ interface IDependencyRegistry {
   getPath(path: string): IClassData | undefined;
 
   /**
-   * Get class dependencies by class - constructor
-   * @param {Constructor} target class - constructor
+   * Get class dependencies by class constructor
+   * @param {Constructor} target class constructor
    */
   getDependencies(target: Constructor): Constructor[] | undefined;
 }
