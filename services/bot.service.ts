@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { TConstructor, TMessage, TMetadata } from '../types';
+import { Constructor, BotMessage, BotMetadata, IClassData } from '../types';
 import 'reflect-metadata';
 import { Container } from '../decorators';
 
@@ -7,8 +7,14 @@ import { Container } from '../decorators';
  * Доделать квери лисенер
  * Изменить any тип
  */
-export class BotService {
-  bot: TelegramBot;
+
+export interface IBotService {
+  messageListenerOn(): void;
+  messageListenerOff(): void;
+}
+
+export class BotService implements IBotService {
+  private bot: TelegramBot;
 
   constructor(token: string, polling: boolean, callback?: () => void) {
     this.bot = new TelegramBot(token, { polling: polling });
@@ -16,21 +22,24 @@ export class BotService {
   }
 
   async messageListenerOn() {
-    return this.bot.on('message', this.messageListener.bind(this));
+    this.bot.on('message', this.messageListener.bind(this));
   }
 
-  private async messageListener(
-    message: TMessage,
-    metadata: TMetadata,
-  ): Promise<TMessage> {
+  async messageListenerOff() {
+    this.bot.removeListener('message', this.messageListener);
+  }
+
+  private async messageListener(message: BotMessage, metadata: BotMetadata) {
     const path: string = message.text ? message.text : '';
-    const chatId = message.chat.id;
-    const { target, method }: { target: TConstructor; method: string } =
-      Container.getPath(path);
-    const isDependencies: TConstructor[] | undefined = Container.getDependencies(target);
-    const instance = this.dependenciesSetter(target, isDependencies);
-    const result = instance[method](message, metadata);
-    return this.bot.sendMessage(chatId, result);
+    const chatId: number = message.chat.id;
+    const pathOptions: IClassData | undefined = Container.getPath(path);
+    if (!pathOptions) return;
+    const isDependencies: Constructor[] | undefined = Container.getDependencies(
+      pathOptions.target,
+    );
+    const instance = this.dependenciesSetter(pathOptions.target, isDependencies);
+    const result = instance[pathOptions.method](message, metadata);
+    if (result) await this.bot.sendMessage(chatId, result, pathOptions.options);
   }
 
   // private async queryListener(query: TelegramBot.CallbackQuery) {
@@ -44,13 +53,13 @@ export class BotService {
   // }
 
   private dependenciesSetter(
-    target: TConstructor,
-    dependencies: TConstructor[] | undefined,
+    target: Constructor,
+    dependencies: Constructor[] | undefined,
   ): any {
     if (!dependencies) return new target();
     const instanceMapper = [];
     for (const dependencyTarget of dependencies) {
-      const isDependencies: TConstructor[] | undefined =
+      const isDependencies: Constructor[] | undefined =
         Container.getDependencies(dependencyTarget);
       if (isDependencies) {
         return this.dependenciesSetter(dependencyTarget, isDependencies);

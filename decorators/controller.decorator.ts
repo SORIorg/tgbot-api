@@ -1,7 +1,11 @@
 import { Container } from './dependecy.register';
-import { TConstructor } from '../types';
+import { Constructor } from '../types';
 
-export function Controller(target: TConstructor) {
+/**
+ * Controller decorator for collects dependencies from metadata in DI
+ * @param {Constructor} target class constructor
+ */
+export function Controller(target: Constructor) {
   const dependencies = Reflect.getMetadata('design:paramtypes', target);
   Container.setDependencies(target, dependencies);
 }
