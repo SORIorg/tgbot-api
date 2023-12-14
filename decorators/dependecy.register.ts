@@ -20,6 +20,12 @@ interface IDependencyRegistry {
   setDependencies(target: Constructor, dependencies: Constructor[]): void;
 
   /**
+   * For checking path
+   * @param {string} path path
+   */
+  checkPath(path: string): boolean
+
+  /**
    * Get class metadata by path
    * @param {string} path like "/start"
    */
@@ -45,6 +51,10 @@ class DependencyRegistry implements IDependencyRegistry {
     if (this.dependencies.has(target))
       throw new Error(`This class ${target.constructor.name} already exists`);
     this.dependencies.set(target, dependencies);
+  }
+
+  checkPath(path: string): boolean {
+    return this.paths.has(path);
   }
 
   getPath(path: string): IClassData | undefined {

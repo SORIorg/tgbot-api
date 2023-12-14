@@ -7,7 +7,7 @@ import { BotMessageOptions, IClassData } from '../types';
  * @param {BotMessageOptions} options additional options for keyboard and more...
  * @constructor
  */
-export function Message(trigger: string = '', options?: BotMessageOptions) {
+export function Message(trigger: string = ' ', options?: BotMessageOptions) {
   return function (target: any, propertyKey: string, _descriptor: PropertyDescriptor) {
     const classData: IClassData = {
       target: target.constructor,

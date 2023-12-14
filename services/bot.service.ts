@@ -32,7 +32,7 @@ export class BotService implements IBotService {
   private async messageListener(message: BotMessage, metadata: BotMetadata) {
     const path: string = message.text ? message.text : '';
     const chatId: number = message.chat.id;
-    const pathOptions: IClassData | undefined = Container.getPath(path);
+    const pathOptions: IClassData | undefined = Container.checkPath(path) ? Container.getPath(path) : Container.getPath(' ');
     if (!pathOptions) return;
     const isDependencies: Constructor[] | undefined = Container.getDependencies(
       pathOptions.target,
