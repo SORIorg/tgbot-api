@@ -29,7 +29,7 @@ botStart();
   controllers: [MessageController],
   services: [MessageService],
 })
-export class FortestingModule {}
+export class AppModule {}
 ```
 4. Контроллер:
 ```ts
