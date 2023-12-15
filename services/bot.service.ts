@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { Constructor, BotMessage, BotMetadata, IClassData } from '../types';
+import { Constructor, BotMessage, BotMetadata, IClassData, BotMessageOptions } from '../types';
 import 'reflect-metadata';
 import { Container } from '../decorators';
 
@@ -11,6 +11,8 @@ import { Container } from '../decorators';
 export interface IBotService {
   messageListenerOn(): void;
   messageListenerOff(): void;
+  sendMessage(chatId: number, message: string, options?: BotMessageOptions): Promise<BotMessage>;
+  deleteMessage(chatId: number, messageId: number): Promise<boolean>;
 }
 
 export class BotService implements IBotService {
@@ -29,6 +31,14 @@ export class BotService implements IBotService {
     this.bot.removeListener('message', this.messageListener);
   }
 
+  async sendMessage(chatId: number, message: string, options?: BotMessageOptions) {
+    return this.bot.sendMessage(chatId, message, options);
+  }
+
+  async deleteMessage(chatId: number, messageId: number) {
+    return this.bot.deleteMessage(chatId, messageId);
+  }
+
   private async messageListener(message: BotMessage, metadata: BotMetadata) {
     const path: string = message.text ? message.text : '';
     const chatId: number = message.chat.id;
@@ -38,7 +48,7 @@ export class BotService implements IBotService {
       pathOptions.target,
     );
     const instance = this.dependenciesSetter(pathOptions.target, isDependencies);
-    const result = instance[pathOptions.method](message, metadata);
+    const result = await instance[pathOptions.method](message, metadata);
     if (result) await this.bot.sendMessage(chatId, result, pathOptions.options);
   }
 
