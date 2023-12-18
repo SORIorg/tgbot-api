@@ -1,19 +1,24 @@
 import { Container } from './dependecy.register';
-import { BotMessageOptions, IClassData } from '../types';
+import { IClassData, MethodDecoratorOptions } from '../types';
 
 /**
  * Message decorator to collects paths and bind with method and class
- * @param {string} trigger path like "/start"
- * @param {BotMessageOptions} options additional options for keyboard and more...
+ * @param {MethodDecoratorOptions} options command, description, message options
  * @constructor
  */
-export function Message(trigger: string = ' ', options?: BotMessageOptions) {
+export function Message(options?: MethodDecoratorOptions) {
+  const [messageOptions, command= ' ', description] = options
+    ? options
+    : [undefined, ' ', undefined];
+  if (command && command !== ' ' && description) {
+    Container.setDescription(command, description);
+  }
   return function (target: any, propertyKey: string, _descriptor: PropertyDescriptor) {
     const classData: IClassData = {
       target: target.constructor,
       method: propertyKey,
-      options,
+      options: messageOptions,
     };
-    Container.setPath(trigger, classData);
+    Container.setPath(command, classData);
   };
 }

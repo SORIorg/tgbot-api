@@ -1,5 +1,12 @@
 # @soriorg/tgbot-api
 
+### Это обертка над библиотекой node-telegram-bot-api которая позволяет упростить работу с ботом
+
+> Note: Для корректного отображения типов установите их из библиотеки node-telegram-bot-api:
+>```sh
+>npm install --save-dev @types/node-telegram-bot-api
+>```
+
 Быстрый старт:
 1. создать index.ts в котором:
 Импортировать BotFactory и использовать метод create с аргументами:
@@ -39,28 +46,30 @@ export class AppModule {}
 ```
 3. Контроллер:
 Класс контроллер оборачивается декоратором Controller.
-Методы контроллера оборачиваются декоратором Message. Первым аргументом можно зарегистрировать команды по которым будет отрабатывать метод, вторым объект Message Options.
+Методы контроллера оборачиваются декоратором Message и принимает массив. Первым аргументом можно зарегистрировать опции сообщения, вторым команду, третьим описание команды.
 ```ts
 import {Controller, Message} from '@soriorg/tgbot-api';
 import { MessageService } from './message.service';
 
 @Controller
 export class MessageController {
-  constructor(private readonly messageService: MessageService) {} // Сервисы должны передаваться через конструктор
-
-  @Message('/start', {
-    reply_markup: {
-      keyboard: [[{ text: 'first bttn' }]],
-      resize_keyboard: true,
-    },
-  })
-  start() {
-    return this.messageService.start();
+  constructor(
+    private readonly messageService: MessageService,
+  ) {}
+  @Message([{parse_mode: 'Markdown'}]) // Принимает любое не зарегистрированное сообщение
+  async randomMessage(message: BotMessage, metadata: BotMetadata) {
+    const userMessage = message.text;
+    return `Я пока не умею обрабатывать ваше сообщение: "${userMessage}" \`\`\`js hello \`\`\``;
   }
 
-  @Message('/test')
-  test() {
-    return 'test'; // Return всегда должен быть строкой, он возвращает сообщение пользователю. Если его не указать, то функция отработает но пользователь ничего не получит
+  @Message([{parse_mode: 'Markdown'}, '/start', 'Нажмите для старта']) // установит описание "Нажмите для старта" в меню бота как описание
+  async start() {
+    return '```js hello, world```'
+  }
+
+  @Message([{}, '/test'])
+  async test() {
+    return this.messageService.testMethod(); // использование внутренних методов
   }
 }
 ```
@@ -69,9 +78,7 @@ export class MessageController {
 ```ts
 import {BotFactory, BotMessage, BotMetadata, Message} from '@soriorg/tgbot-api';
 
-@Message(' ', { // указали пробел в качестве аргумента
-  parse_mode: "Markdown"
-})
+@Message([{}, ' ', '']) // Указали пробел вместо команды
 async start(message: BotMessage, metadata: BotMetadata) { // Указываем аргументы message и metadata 
   const chatId = message.chat.id; // Получаем chat id с пользователем из аргумента message
   const messageForUser = await BotFactory.sendMessage(chatId, 'Подождите пока ваш запрос обрабатывается базой данных') // метод sendMessage отправляет сообщение (А)

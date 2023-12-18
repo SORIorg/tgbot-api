@@ -20,6 +20,7 @@ export class BotService implements IBotService {
 
   constructor(token: string, polling: boolean, callback?: () => void) {
     this.bot = new TelegramBot(token, { polling: polling });
+    this.bot.setMyCommands(Container.getDescriptions());
     if (callback) callback();
   }
 
