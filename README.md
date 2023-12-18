@@ -1,5 +1,12 @@
 # @soriorg/tgbot-api
 
+### Это обертка над библиотекой node-telegram-bot-api которая позволяет упростить работу с ботом
+
+> Note: Для корректного отображения типов установите их из библиотеки node-telegram-bot-api:
+>```sh
+>npm install --save-dev @types/node-telegram-bot-api
+>```
+
 Быстрый старт:
 1. создать index.ts в котором:
 Импортировать BotFactory и использовать метод create с аргументами:
