@@ -9,9 +9,16 @@ interface IDependencyRegistry {
   /**
    * Set the path like "/start" with method like "start(){}" and class like "controller{}"
    * @param {string} path like "/start"
-   * @param {IClassData} classData class metadata along the path
+   * @param {IClassData} methodData class metadata along the path
    */
-  setPath(path: string, classData: IClassData): void;
+  setMessagePath(path: string, methodData: IClassData): void;
+
+  /**
+   * Set the path like "Reg" with method like "register(){}" and class like "controller{}"
+   * @param {string} path like "Reg"
+   * @param {IClassData} methodData class metadata along the path
+   */
+  setQueryPath(path: string, methodData: IClassData): void;
 
   /**
    * Set the class and dependencies
@@ -37,7 +44,13 @@ interface IDependencyRegistry {
    * Get class metadata by path
    * @param {string} path like "/start"
    */
-  getPath(path: string): IClassData | undefined;
+  getMessagePath(path: string): IClassData | undefined;
+
+  /**
+   * Get class metadata by path
+   * @param {string} query
+   */
+  getQueryPath(query: string): IClassData | undefined;
 
   /**
    * Get class dependencies by class constructor
@@ -52,13 +65,19 @@ interface IDependencyRegistry {
 }
 
 class DependencyRegistry implements IDependencyRegistry {
-  private paths: Map<string, IClassData> = new Map();
+  private messagePaths: Map<string, IClassData> = new Map();
+  private queryPaths: Map<string, IClassData> = new Map();
   private dependencies: Map<Constructor, Constructor[]> = new Map();
   private descriptions: BotCommand[] = [];
 
-  setPath(path: string, methodData: IClassData) {
-    if (this.paths.has(path)) throw new Error(`This path ${path} already exists`);
-    this.paths.set(path, methodData);
+  setMessagePath(path: string, methodData: IClassData) {
+    if (this.messagePaths.has(path)) throw new Error(`This path ${path} already exists`);
+    this.messagePaths.set(path, methodData);
+  }
+
+  setQueryPath(path: string, methodData: IClassData) {
+    if (this.queryPaths.has(path)) throw new Error(`This path ${path} already exists`);
+    this.queryPaths.set(path, methodData);
   }
 
   setDependencies(target: Constructor, dependencies: Constructor[]) {
@@ -72,11 +91,15 @@ class DependencyRegistry implements IDependencyRegistry {
   }
 
   checkPath(path: string): boolean {
-    return this.paths.has(path);
+    return this.messagePaths.has(path);
   }
 
-  getPath(path: string): IClassData | undefined {
-    return this.paths.get(path);
+  getMessagePath(path: string): IClassData | undefined {
+    return this.messagePaths.get(path);
+  }
+
+  getQueryPath(query: string): IClassData | undefined {
+    return this.queryPaths.get(query);
   }
 
   getDependencies(target: Constructor): Constructor[] | undefined {
