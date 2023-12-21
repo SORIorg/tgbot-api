@@ -1,6 +1,6 @@
 {
   "name": "@soriorg/tgbot-api",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Library for simplified work with telegram",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

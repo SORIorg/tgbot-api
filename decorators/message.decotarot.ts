@@ -1,12 +1,12 @@
 import { Container } from './dependecy.register';
-import { IClassData, MethodDecoratorOptions } from '../types';
+import { IClassData, MessageDecoratorOptions } from '../types';
 
 /**
  * Message decorator to collects paths and bind with method and class
- * @param {MethodDecoratorOptions} options command, description, message options
+ * @param {MessageDecoratorOptions} options command, description, message options
  * @constructor
  */
-export function Message(options?: MethodDecoratorOptions) {
+export function Message(options?: MessageDecoratorOptions) {
   const [messageOptions, command= ' ', description] = options
     ? options
     : [undefined, ' ', undefined];
@@ -19,6 +19,6 @@ export function Message(options?: MethodDecoratorOptions) {
       method: propertyKey,
       options: messageOptions,
     };
-    Container.setPath(command, classData);
+    Container.setMessagePath(command, classData);
   };
 }
