@@ -1,4 +1,4 @@
-import { Container } from './dependecy.register';
+import { Container } from '../di';
 import { IClassData, MessageDecoratorOptions } from '../types';
 
 /**
