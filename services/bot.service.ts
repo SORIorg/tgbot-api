@@ -1,7 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { Constructor, BotMessage, BotMetadata, IClassData, BotMessageOptions, BotCallbackQuery } from '../types';
 import 'reflect-metadata';
-import { Container } from '../decorators';
+import { Container } from '../di';
 
 /**
  * Доделать квери лисенер

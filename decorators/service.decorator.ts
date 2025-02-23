@@ -1,5 +1,5 @@
 import { Constructor } from '../types';
-import { Container } from './dependecy.register';
+import { Container } from '../di';
 
 /**
  * Service decorator for collects dependencies from metadata in DI
