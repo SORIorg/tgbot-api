@@ -7,9 +7,9 @@ import { IClassData, MessageDecoratorOptions } from '../types';
  * @constructor
  */
 export function Message(options?: MessageDecoratorOptions) {
-  const [messageOptions, command= ' ', description] = options
-    ? options
-    : [undefined, ' ', undefined];
+  const command = options?.command ? options.command : ' ';
+  const description = options?.description;
+  const messageOptions = options?.botMessageOptions;
   if (command && command !== ' ' && description) {
     Container.setDescription(command, description);
   }
